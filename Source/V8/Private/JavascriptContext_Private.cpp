@@ -1082,6 +1082,7 @@ public:
 				Class->AssembleReferenceTokenStream();
 			}
 #endif
+			Class->UpdateCustomPropertyListForPostConstruction();
 			auto end = FPlatformTime::Seconds();
 			UE_LOG(Javascript, Warning, TEXT("Create UClass(%s) Elapsed: %.6f"), *Name, end - start);
 		};
