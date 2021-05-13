@@ -12,7 +12,7 @@
         let _ = require('lodash')
         let prerequisites = []
         let extensions = []
-        let root_path = Root.GetDir('GameContent') + 'Scripts'
+		let root_path = Root.GetDir('GameContent') + 'Js/Build'
 
 		function read_dir(dir) {
 			let out = Root.ReadDirectory(dir)

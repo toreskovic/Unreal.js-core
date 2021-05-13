@@ -236,7 +236,7 @@ public:
 
 	static FString GetGameScriptsDirectory()
 	{
-		return FPaths::ProjectContentDir() / "Scripts/";
+		return FPaths::ProjectContentDir() / "Js/Build/";
 	}
 
 	virtual void AddGlobalScriptSearchPath(const FString& Path) override
