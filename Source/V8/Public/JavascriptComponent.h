@@ -43,7 +43,7 @@ public:
 	DECLARE_DYNAMIC_DELEGATE(FJavascriptNoParamSignature);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Javascript")
-	FString ScriptSourceFile;
+	FString ScriptSourceFile = "index.js";
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Javascript")
 	bool bActiveWithinEditor;
