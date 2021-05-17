@@ -64,6 +64,10 @@ float UJavascriptProfile::GetSampleTimestamp(int32 index)
 
 FJavascriptCpuProfiler UJavascriptProfile::Start(const FString& Title, bool bRecordSamples)
 {
+#if PLATFORM_ANDROID
+	FJavascriptCpuProfiler out { nullptr };
+	return out;
+#else
 	auto isolate = Isolate::GetCurrent();
 
 	FIsolateHelper I(isolate);
@@ -73,6 +77,7 @@ FJavascriptCpuProfiler UJavascriptProfile::Start(const FString& Title, bool bRec
 	FJavascriptCpuProfiler out { nullptr };
 	out.Profiler = profiler;
 	return out;
+#endif
 }
 
 UJavascriptProfile* UJavascriptProfile::Stop(const FJavascriptCpuProfiler& Profiler, const FString& Title)

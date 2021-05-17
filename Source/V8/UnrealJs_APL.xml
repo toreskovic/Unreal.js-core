@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- steps to add to build additions -->
+<root xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- init section is always evaluated once per architecture -->
+  <init>
+    <setBool result="bSupported" value="false"/>
+    <isArch arch="armeabi-v7a">
+      <setBool result="bSupported" value="true"/>
+    </isArch>
+  </init>
+
+  <!-- optional files or directories to copy to Intermediate/Android/APK -->
+  <resourceCopies>
+    <isArch arch="armeabi-v7a">
+      <copyFile src="$S(PluginDir)/../../ThirdParty/v8/lib/Android/ARMv7/libv8.so"
+						dst="$S(BuildDir)/libs/armeabi-v7a/libv8.so" />
+    </isArch>
+    <isArch arch="arm64-v8a">
+      <copyFile src="$S(PluginDir)/../../ThirdParty/v8/lib/Android/ARM64/libv8.so"
+						dst="$S(BuildDir)/libs/arm64-v8a/libv8.so" />
+    </isArch>
+  </resourceCopies>
+
+  <!-- optional libraries to load in GameActivity.java before libUE4.so -->
+  <soLoadLibrary>
+    <if condition="bSupported">
+      <true>
+        <loadLibrary name="v8" failmsg="Failed to load v8 library" />
+      </true>
+    </if>
+  </soLoadLibrary>
+</root>
