@@ -46,7 +46,7 @@ void UJavascriptComponent::OnRegister()
 
 			auto* Context = Isolate->CreateContext();
 #if WITH_EDITOR
-			Context->CreateInspector();
+			//Context->CreateInspector();
 #endif
 
 			JavascriptContext = Context;

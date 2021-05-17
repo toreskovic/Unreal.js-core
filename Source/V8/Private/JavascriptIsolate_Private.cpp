@@ -2891,6 +2891,13 @@ public:
 
 		if (!(::IsValid(Object)) || !Object->IsValidLowLevelFast())
 		{
+#if PLATFORM_ANDROID
+			auto sourceUndefined = TEXT("undefined");
+			auto scriptUndefined = v8::Script::Compile(Context->context(), I.String(sourceUndefined)).ToLocalChecked();
+			auto resultUndefined = scriptUndefined->Run(Context->context());
+
+			return resultUndefined.ToLocalChecked();
+#endif
 			return v8::Undefined(isolate_);
 		}
 
