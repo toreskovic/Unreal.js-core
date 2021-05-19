@@ -28,6 +28,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Internationalization/TextNamespaceUtil.h"
 #include "Internationalization/StringTableRegistry.h"
+#include "JavascriptCompatibilityHelpers.h"
 
 #if WITH_EDITOR
 #include "ScopedTransaction.h"
@@ -169,7 +170,7 @@ public:
 			}
 			else
 			{
-				return v8::Undefined(isolate);
+				return FJavascriptCompatibilityHelpers::Undefined(isolate);
 			}
 		}
 
@@ -265,7 +266,7 @@ public:
 			}
 			else
 			{
-				return v8::Undefined(isolate);
+				return FJavascriptCompatibilityHelpers::Undefined(isolate);
 			}
 		}
 
@@ -547,7 +548,7 @@ public:
 		if (!Buffer)
 		{
 			I.Throw(TEXT("Read property from invalid memory"));
-			return v8::Undefined(isolate_);
+			return FJavascriptCompatibilityHelpers::Undefined(isolate_);
 		}
 
 #if WITH_EDITOR
@@ -651,7 +652,7 @@ public:
 			{
 				UE_LOG(Javascript, Warning, TEXT("Non ScriptStruct found : %s"), *p->Struct->GetName());
 
-				return v8::Undefined(isolate_);
+				return FJavascriptCompatibilityHelpers::Undefined(isolate_);
 			}
 		}
 		else if (auto p = CastField<FArrayProperty>(Property))
@@ -1619,7 +1620,7 @@ public:
 		}
 
 		// No return value available
-		return handle_scope.Escape(v8::Undefined(isolate));
+		return handle_scope.Escape(FJavascriptCompatibilityHelpers::Undefined(isolate));
 	}
 
 	void ExportFunction(Handle<FunctionTemplate> Template, UFunction* FunctionToExport)
@@ -1659,7 +1660,7 @@ public:
 					// Otherwise, just return undefined.
 					else
 					{
-						return v8::Undefined(isolate);
+						return FJavascriptCompatibilityHelpers::Undefined(isolate);
 					}
 				})
 			);
@@ -1710,7 +1711,7 @@ public:
 					}
 					else
 					{
-						return v8::Undefined(isolate);
+						return FJavascriptCompatibilityHelpers::Undefined(isolate);
 					}
 				})
 			);
@@ -1751,7 +1752,7 @@ public:
 					// Otherwise, just return undefined.
 					else
 					{
-						return v8::Undefined(isolate);
+						return FJavascriptCompatibilityHelpers::Undefined(isolate);
 					}
 				})
 			);
@@ -2822,7 +2823,7 @@ public:
 		FIsolateHelper I(isolate_);
 		if (!Struct || !Buffer)
 		{
-			return v8::Undefined(isolate_);
+			return FJavascriptCompatibilityHelpers::Undefined(isolate_);
 		}
 
 		auto v8_struct = ExportStruct(Struct);
@@ -2833,12 +2834,12 @@ public:
 		auto maybe_func = v8_struct->GetFunction(isolate_->GetCurrentContext());
 
 		if (maybe_func.IsEmpty())
-			return v8::Undefined(isolate_);
+			return FJavascriptCompatibilityHelpers::Undefined(isolate_);
 
 		auto obj = maybe_func.ToLocalChecked()->NewInstance(isolate_->GetCurrentContext(), 2, args);
 
 		if (obj.IsEmpty())
-			return v8::Undefined(isolate_);
+			return FJavascriptCompatibilityHelpers::Undefined(isolate_);
 
 		return obj.ToLocalChecked();
 	}
@@ -2849,7 +2850,7 @@ public:
 
 		if (!(::IsValid(Object)) || !Object->IsValidLowLevelFast())
 		{
-			return v8::Undefined(isolate_);
+			return FJavascriptCompatibilityHelpers::Undefined(isolate_);
 		}
 
 		auto ObjectPtr = GetContext()->ObjectToObjectMap.Find(Object);
@@ -2862,12 +2863,12 @@ public:
 			auto maybe_func = v8_class->GetFunction(isolate_->GetCurrentContext());
 
 			if (maybe_func.IsEmpty())
-				return v8::Undefined(isolate_);
+				return FJavascriptCompatibilityHelpers::Undefined(isolate_);
 
 			auto maybe_value = maybe_func.ToLocalChecked()->NewInstance(isolate_->GetCurrentContext(), 1, args);
 
 			if (maybe_value.IsEmpty())
-				return v8::Undefined(isolate_);
+				return FJavascriptCompatibilityHelpers::Undefined(isolate_);
 
 			return maybe_value.ToLocalChecked();
 		}
@@ -2886,19 +2887,12 @@ public:
 		auto Context = GetContext();
 		if (!Context)
 		{
-			return v8::Undefined(isolate_);
+			return FJavascriptCompatibilityHelpers::Undefined(isolate_);
 		}
 
 		if (!(::IsValid(Object)) || !Object->IsValidLowLevelFast())
 		{
-#if PLATFORM_ANDROID
-			auto sourceUndefined = TEXT("undefined");
-			auto scriptUndefined = v8::Script::Compile(Context->context(), I.String(sourceUndefined)).ToLocalChecked();
-			auto resultUndefined = scriptUndefined->Run(Context->context());
-
-			return resultUndefined.ToLocalChecked();
-#endif
-			return v8::Undefined(isolate_);
+			return FJavascriptCompatibilityHelpers::Undefined(isolate_);
 		}
 
 		auto ObjectPtr = Context->ObjectToObjectMap.Find(Object);
@@ -2924,7 +2918,7 @@ public:
 				auto maybe_value = ExportUClass(Class)->GetFunction(isolate_->GetCurrentContext());
 				if (maybe_value.IsEmpty())
 				{
-					return v8::Undefined(isolate_);
+					return FJavascriptCompatibilityHelpers::Undefined(isolate_);
 				}
 				value = maybe_value.ToLocalChecked();
 			}
@@ -2933,7 +2927,7 @@ public:
 				auto maybe_value= ExportStruct(Struct)->GetFunction(isolate_->GetCurrentContext());
 				if (maybe_value.IsEmpty())
 				{
-					return v8::Undefined(isolate_);
+					return FJavascriptCompatibilityHelpers::Undefined(isolate_);
 				}
 				value = maybe_value.ToLocalChecked();
 			}
@@ -2949,14 +2943,14 @@ public:
 
 				if (maybe_func.IsEmpty())
 				{
-					return v8::Undefined(isolate_);
+					return FJavascriptCompatibilityHelpers::Undefined(isolate_);
 				}
 
 				auto maybe_value = maybe_func.ToLocalChecked()->NewInstance(isolate_->GetCurrentContext(), 1, args);
 
 				if (maybe_value.IsEmpty())
 				{
-					return v8::Undefined(isolate_);
+					return FJavascriptCompatibilityHelpers::Undefined(isolate_);
 				}
 				value = maybe_value.ToLocalChecked();
 			}

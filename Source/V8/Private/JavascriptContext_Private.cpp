@@ -1549,7 +1549,7 @@ public:
 			if (!found)
 			{
 				UE_LOG(Javascript, Warning, TEXT("Undefined required script '%s'"), *required_module);
-				info.GetReturnValue().Set(v8::Undefined(isolate));
+				info.GetReturnValue().Set(FJavascriptCompatibilityHelpers::Undefined(isolate));
 			}
 		};
 
@@ -2092,44 +2092,44 @@ public:
 		auto exported = ExportObject(Object);
 		if (exported->IsUndefined())
 		{
-			return v8::Undefined(isolate());
+			return FJavascriptCompatibilityHelpers::Undefined(isolate());
 		}
 
 		auto maybe_obj = exported->ToObject(Context);
 		if (maybe_obj.IsEmpty())
 		{
-			return v8::Undefined(isolate());
+			return FJavascriptCompatibilityHelpers::Undefined(isolate());
 		}
 
 		auto maybe_proxy = maybe_obj.ToLocalChecked()->Get(Context, V8_KeywordString(isolate(), "proxy"));
 		if (maybe_proxy.IsEmpty())
 		{
-			return v8::Undefined(isolate());
+			return FJavascriptCompatibilityHelpers::Undefined(isolate());
 		}
 
 		auto proxy = maybe_proxy.ToLocalChecked();
 		if (proxy.IsEmpty() || !proxy->IsObject())
 		{
-			return v8::Undefined(isolate());
+			return FJavascriptCompatibilityHelpers::Undefined(isolate());
 		}
 
 		auto maybe_proxyObj = proxy->ToObject(Context);
 		if (maybe_proxyObj.IsEmpty())
 		{
-			return v8::Undefined(isolate());
+			return FJavascriptCompatibilityHelpers::Undefined(isolate());
 		}
 		auto maybe_func = maybe_proxyObj.ToLocalChecked()->Get(Context, V8_KeywordString(isolate(), Name));
 
 		if (maybe_func.IsEmpty())
 		{
-			return v8::Undefined(isolate());
+			return FJavascriptCompatibilityHelpers::Undefined(isolate());
 		}
 		
 		auto func = maybe_func.ToLocalChecked();
 
 		if (func.IsEmpty() || !func->IsFunction())
 		{
-			return v8::Undefined(isolate());
+			return FJavascriptCompatibilityHelpers::Undefined(isolate());
 		}
 
 		return func;
