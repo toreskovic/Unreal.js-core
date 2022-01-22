@@ -202,7 +202,7 @@ void UJavascriptEditorLibrary::OpenPopupWindow(UWidget* Widget, const FVector2D&
 
 void UJavascriptEditorLibrary::GetAllTags(const FJavascriptAssetData& AssetData, TArray<FName>& OutArray)
 {
-	AssetData.SourceAssetData.TagsAndValues.GetKeys(OutArray);
+	AssetData.SourceAssetData.TagsAndValues.CopyMap().GetKeys(OutArray);
 }
 
 bool UJavascriptEditorLibrary::GetTagValue(const FJavascriptAssetData& AssetData, const FName& Name, FString& OutValue)
