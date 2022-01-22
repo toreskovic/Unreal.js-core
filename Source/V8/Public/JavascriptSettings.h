@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine/DataTable.h"
 #include "JavascriptSettings.generated.h"
 
 USTRUCT(BlueprintType)
