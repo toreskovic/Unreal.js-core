@@ -6,6 +6,7 @@
 #include "Engine/Engine.h"
 #include "V8PCH.h"
 #include "IV8.h"
+#include <V8/Public/JavascriptSettings.h>
 
 
 DECLARE_CYCLE_STAT(TEXT("Javascript Component Tick Time"), STAT_JavascriptComponentTickTime, STATGROUP_Javascript);
@@ -144,6 +145,21 @@ void UJavascriptComponent::ProcessEvent(UFunction* Function, void* Parms)
 
 UObject* UJavascriptComponent::ResolveAsset(FName Name, bool bTryLoad)
 {
+	const UJavascriptSettings* settings = GetDefault<UJavascriptSettings>();
+
+	if (settings->ResolvableAssetsClassesDT != nullptr)
+	{
+		FJavascriptResolvableAssetsClassesRow* row = settings->ResolvableAssetsClassesDT->FindRow<FJavascriptResolvableAssetsClassesRow>(Name, TEXT("UJavascriptComponent::ResolveAsset"), true);
+		if (row == nullptr)
+		{
+			UE_LOG(Javascript, Error, TEXT("UJavascriptComponent::ResolveAsset | No row found for %s"), *Name.ToString());
+		}
+		else
+		{
+			return bTryLoad ? row->Asset.TryLoad() : row->Asset.ResolveObject();
+		}
+	}
+
 	for (const auto& Item : Assets)
 	{
 		if (Item.Name == Name)
@@ -157,6 +173,21 @@ UObject* UJavascriptComponent::ResolveAsset(FName Name, bool bTryLoad)
 
 UClass* UJavascriptComponent::ResolveClass(FName Name)
 {
+	const UJavascriptSettings* settings = GetDefault<UJavascriptSettings>();
+
+	if (settings->ResolvableAssetsClassesDT != nullptr)
+	{
+		FJavascriptResolvableAssetsClassesRow* row = settings->ResolvableAssetsClassesDT->FindRow<FJavascriptResolvableAssetsClassesRow>(Name, TEXT("UJavascriptComponent::ResolveAsset"), true);
+		if (row == nullptr)
+		{
+			UE_LOG(Javascript, Error, TEXT("UJavascriptComponent::ResolveAsset | No row found for %s"), *Name.ToString());
+		}
+		else
+		{
+			return row->Class;
+		}
+	}
+
 	for (const auto& Item : ClassAssets)
 	{
 		if (Item.Name == Name)

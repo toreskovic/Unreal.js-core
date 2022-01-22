@@ -187,6 +187,7 @@ public:
 
 		const UJavascriptSettings& Settings = *GetDefault<UJavascriptSettings>();
 		Settings.Apply();
+		Settings.ResolvableAssetsClassesDT.LoadSynchronous();
 
 		FCoreUObjectDelegates::GetPreGarbageCollectDelegate().AddRaw(this, &FV8Module::OnPreGarbageCollection);
 

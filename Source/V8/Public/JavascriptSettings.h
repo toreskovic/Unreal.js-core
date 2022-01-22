@@ -2,6 +2,18 @@
 
 #include "JavascriptSettings.generated.h"
 
+USTRUCT(BlueprintType)
+struct V8_API FJavascriptResolvableAssetsClassesRow : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditDefaultsOnly)
+	FStringAssetReference Asset;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UObject> Class;
+};
 
 UCLASS(config = Engine, defaultconfig)
 class V8_API UJavascriptSettings
@@ -16,4 +28,9 @@ public:
 	FString V8Flags;	
 
 	void Apply() const;
+
+	UPROPERTY(EditAnywhere, config, Category = Javascript, meta = (
+		DisplayName = "Referenced Assets & Classes DT",
+		ToolTip = "Used for ResolveAsset and ResolveClass"))
+	TSoftObjectPtr<UDataTable> ResolvableAssetsClassesDT = nullptr;
 };
