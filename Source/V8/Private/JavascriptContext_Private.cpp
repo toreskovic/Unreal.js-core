@@ -1084,6 +1084,12 @@ public:
 			Class->UpdateCustomPropertyListForPostConstruction();
 			auto end = FPlatformTime::Seconds();
 			UE_LOG(Javascript, Log, TEXT("Create UClass(%s) Elapsed: %.6f"), *Name, end - start);
+
+			if (Class->IsChildOf<AActor>())
+			{
+				FString humanReadableName = Name.LeftChop(Name.Len() - Name.Find("_C", ESearchCase::CaseSensitive));
+				UJavascriptContext::JavascriptActorClassesMap.FindOrAdd(*humanReadableName) = Class;
+			}
 		};
 
 		auto fn1 = [](const FunctionCallbackInfo<Value>& info) {
