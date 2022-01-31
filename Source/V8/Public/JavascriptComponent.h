@@ -66,12 +66,6 @@ public:
 	UPROPERTY()
 	FJavascriptNameSignature OnInvoke;
 
-	UPROPERTY(EditAnywhere, Category = "Javascript")
-	TArray<FJavascriptAsset> Assets;
-
-	UPROPERTY(EditAnywhere, Category = "Javascript")
-	TArray<FJavascriptClassAsset> ClassAssets;
-
 	// Begin UActorComponent interface.
 	virtual void Activate(bool bReset = false) override;
 	virtual void Deactivate() override;	

@@ -6,7 +6,7 @@
 #include "Engine/Engine.h"
 #include "V8PCH.h"
 #include "IV8.h"
-#include <V8/Public/JavascriptSettings.h>
+#include "V8/Public/JavascriptSettings.h"
 
 
 DECLARE_CYCLE_STAT(TEXT("Javascript Component Tick Time"), STAT_JavascriptComponentTickTime, STATGROUP_Javascript);
@@ -160,14 +160,6 @@ UObject* UJavascriptComponent::ResolveAsset(FName Name, bool bTryLoad)
 		}
 	}
 
-	for (const auto& Item : Assets)
-	{
-		if (Item.Name == Name)
-		{
-			return bTryLoad ? Item.Asset.TryLoad() : Item.Asset.ResolveObject();
-		}
-	}
-
 	return nullptr;
 }
 
@@ -185,14 +177,6 @@ UClass* UJavascriptComponent::ResolveClass(FName Name)
 		else
 		{
 			return row->Class;
-		}
-	}
-
-	for (const auto& Item : ClassAssets)
-	{
-		if (Item.Name == Name)
-		{
-			return Item.Class;
 		}
 	}
 
