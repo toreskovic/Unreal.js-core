@@ -6,8 +6,6 @@
 void UJavascriptSubsystem::Initialize(FSubsystemCollectionBase &Collection)
 {
     Super::Initialize(Collection);
-    
-    UJavascriptContext::JavascriptActorClassesMap.Reset();
 
     UJavascriptIsolate *Isolate = nullptr;
     if (!IsRunningCommandlet())

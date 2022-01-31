@@ -1085,9 +1085,11 @@ public:
 			auto end = FPlatformTime::Seconds();
 			UE_LOG(Javascript, Log, TEXT("Create UClass(%s) Elapsed: %.6f"), *Name, end - start);
 
-			if (Class->IsChildOf<AActor>())
+			if (Class->IsChildOf<AActor>() && GWorld)
 			{
 				FString humanReadableName = Name.LeftChop(Name.Len() - Name.Find("_C", ESearchCase::CaseSensitive));
+				// terrible hack for now
+				humanReadableName += *GWorld->GetPathName();
 				UJavascriptContext::JavascriptActorClassesMap.FindOrAdd(*humanReadableName) = Class;
 			}
 		};
