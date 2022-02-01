@@ -47,14 +47,7 @@ UClass* AJavascriptProxyActor::GetActorClass() const
 	{
 		if (UJavascriptSubsystem* subsystem = world->GetSubsystem<UJavascriptSubsystem>())
 		{
-			if (TWeakObjectPtr<UClass>* weakClassPtr = UJavascriptContext::JavascriptActorClassesMap.Find(*(JavascriptClassName + world->GetPathName())))
-			{
-				TWeakObjectPtr<UClass> weakClass = *weakClassPtr;
-				if (weakClass.IsValid())
-				{
-					return weakClass.Get();
-				}
-			}
+			return subsystem->GetJavascriptActorClass(*JavascriptClassName);
 		}
 	}
 

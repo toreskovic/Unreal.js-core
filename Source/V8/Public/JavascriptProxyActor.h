@@ -4,7 +4,7 @@
 #include "JavascriptProxyActor.generated.h"
 
 UCLASS(BlueprintType, Blueprintable)
-class V8_API AJavascriptProxyActor : public AActor
+class AJavascriptProxyActor : public AActor
 {
 	GENERATED_BODY()
 

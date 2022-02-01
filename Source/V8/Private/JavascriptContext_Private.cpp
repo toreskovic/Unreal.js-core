@@ -33,6 +33,7 @@
 #include "JavascriptStats.h"
 
 #include "../../Launch/Resources/Version.h"
+#include "JavascriptSubsystem.h"
 
 using namespace v8;
 
@@ -1087,10 +1088,11 @@ public:
 
 			if (Class->IsChildOf<AActor>() && GWorld)
 			{
-				FString humanReadableName = Name.LeftChop(Name.Len() - Name.Find("_C", ESearchCase::CaseSensitive));
-				// terrible hack for now
-				humanReadableName += *GWorld->GetPathName();
-				UJavascriptContext::JavascriptActorClassesMap.FindOrAdd(*humanReadableName) = Class;
+				if (UJavascriptSubsystem* javascriptSubsystem = GWorld->GetSubsystem<UJavascriptSubsystem>())
+				{
+					FString humanReadableName = Name.LeftChop(Name.Len() - Name.Find("_C", ESearchCase::CaseSensitive));
+					javascriptSubsystem->SetJavascriptActorClass(*humanReadableName, Class);
+				}
 			}
 		};
 

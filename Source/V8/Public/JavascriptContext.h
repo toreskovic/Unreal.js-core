@@ -33,8 +33,6 @@ public:
 	TSharedPtr<FJavascriptContext> JavascriptContext;
 	TSharedPtr<FString> ContextId;
 
-	static TMap<FName, TWeakObjectPtr<UClass>> JavascriptActorClassesMap;
-
 #if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
 	struct FConsoleCommandInfo
 	{

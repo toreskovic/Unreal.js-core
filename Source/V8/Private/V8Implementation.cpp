@@ -13,8 +13,6 @@ using namespace v8;
 
 DEFINE_LOG_CATEGORY(Javascript);
 
-TMap<FName, TWeakObjectPtr<UClass>> UJavascriptContext::JavascriptActorClassesMap;
-
 UJavascriptIsolate::UJavascriptIsolate(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
 {

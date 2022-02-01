@@ -6,8 +6,11 @@
 UCLASS()
 class UJavascriptSubsystem : public UWorldSubsystem, public FTickableGameObject
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
+	
 public:
+	friend class FJavascriptContextImplementation;
+
     // Begin USubsystem
     virtual void Initialize(FSubsystemCollectionBase& Collection) override;
     virtual void Deinitialize() override;
@@ -44,6 +47,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Javascript")
 	UEngine* GetEngine();
 
+	UClass* GetJavascriptActorClass(FName Name);
+
 	DECLARE_DYNAMIC_DELEGATE_OneParam(FJavascriptTickSignature, float, DeltaSeconds);	
 	UPROPERTY()
 	FJavascriptTickSignature OnTick;
@@ -54,8 +59,12 @@ private:
 
 	UPROPERTY(transient)
 	UJavascriptIsolate* JavascriptIsolate;
+
+	TMap<FName, TWeakObjectPtr<UClass>> JavascriptActorClassesMap;
 	
 	// The last frame number we were ticked.
 	// We don't want to tick multiple times per frame 
 	uint32 LastFrameNumberWeTicked = INDEX_NONE;
+
+	void SetJavascriptActorClass(FName Name, UClass* JavascriptClass);
 };

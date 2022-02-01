@@ -141,3 +141,21 @@ UEngine* UJavascriptSubsystem::GetEngine()
 {
     return GEngine;
 }
+
+UClass* UJavascriptSubsystem::GetJavascriptActorClass(FName Name)
+{
+    if (TWeakObjectPtr<UClass>* weakClass = JavascriptActorClassesMap.Find(Name))
+    {
+        if (weakClass->IsValid())
+        {
+            return weakClass->Get();
+        }
+    }
+
+    return nullptr;
+}
+
+void UJavascriptSubsystem::SetJavascriptActorClass(FName Name, UClass* JavascriptClass)
+{
+    JavascriptActorClassesMap.FindOrAdd(Name) = JavascriptClass;
+}
