@@ -638,4 +638,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Scripting | Javascript")
 	static TArray<UActorComponent*> GetComponentsByClass(AActor* Actor, TSubclassOf<UActorComponent> ComponentClass);
+
+	UFUNCTION(BlueprintCallable, Category = "Scripting | Javascript")
+	static FString GetDatatableJson(UDataTable* dataTable);
 };

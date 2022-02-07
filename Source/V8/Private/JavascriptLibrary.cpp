@@ -1068,3 +1068,13 @@ TArray<UActorComponent*> UJavascriptLibrary::GetComponentsByClass(AActor* Actor,
 		return Components;
 	}
 }
+
+FString UJavascriptLibrary::GetDatatableJson(UDataTable* dataTable)
+{
+	if (IsValid(dataTable))
+	{
+		return dataTable->GetTableAsJSON(EDataTableExportFlags::UseJsonObjectsForStructs);
+	}
+
+	return FString();
+}
