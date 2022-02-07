@@ -3,6 +3,84 @@
 #include "V8PCH.h"
 #include "JavascriptSubsystem.generated.h"
 
+USTRUCT(Blueprintable, BlueprintType)
+struct FJavascriptSerializationData
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY()
+	FTransform ActorTransform;
+
+	UPROPERTY()
+	TArray<uint8> Data;
+
+	bool IsEmpty()
+	{
+		return ActorTransform.Equals(FTransform::Identity) && Data.Num() == 0;
+	};
+};
+
+class FJavascriptSerializationWriter : public FMemoryWriter
+{
+public:
+	FJavascriptSerializationWriter (TArray<uint8> &InBytes, bool bIsPersistent = false, bool bSetOffset = false, const FName InArchiveName = NAME_None)
+		: FMemoryWriter(InBytes, bIsPersistent, bSetOffset, InArchiveName)
+	{
+	}
+
+	using FArchive::operator<<; // For visibility of the overloads we don't override
+
+	virtual FArchive &operator<<(class UObject *&Obj) override
+	{
+		// Serialize the FName as a string
+		if (IsLoading())
+		{
+			FString StringName;
+			*this << StringName;
+			FName N = FName(*StringName);
+
+			Obj = FindObject<UObject>(ANY_PACKAGE, *StringName, false);
+		}
+		else
+		{
+			FString StringName = Obj->GetPathName();
+			*this << StringName;
+		}
+		return *this;
+	}
+};
+
+class FJavascriptSerializationReader : public FMemoryReader
+{
+public:
+	explicit FJavascriptSerializationReader(const TArray<uint8> &InBytes, bool bIsPersistent = false)
+		: FMemoryReader(InBytes, bIsPersistent)
+	{
+	}
+
+	using FArchive::operator<<; // For visibility of the overloads we don't override
+
+	virtual FArchive &operator<<(class UObject *&Obj) override
+	{
+		// Serialize the FName as a string
+		if (IsLoading())
+		{
+			FString StringName;
+			*this << StringName;
+			FName N = FName(*StringName);
+
+			Obj = FindObject<UObject>(ANY_PACKAGE, *StringName, false);
+		}
+		else
+		{
+			FString StringName = Obj->GetPathName();
+			*this << StringName;
+		}
+		return *this;
+	}
+};
+
 UCLASS()
 class UJavascriptSubsystem : public UWorldSubsystem, public FTickableGameObject
 {
@@ -43,6 +121,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Javascript")
     UClass* ResolveClass(FName Name);
+
+	UFUNCTION(BlueprintCallable)
+	static FJavascriptSerializationData SerializeObject(UObject *object);
+
+	UFUNCTION(BlueprintCallable)
+	void DeserializeObject(UObject* object, FJavascriptSerializationData saveData);
 
 	UFUNCTION(BlueprintCallable, Category = "Javascript")
 	UEngine* GetEngine();

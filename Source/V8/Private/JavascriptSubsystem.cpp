@@ -130,11 +130,54 @@ UClass *UJavascriptSubsystem::ResolveClass(FName Name)
         }
         else
         {
-            return row->Class;
+            return row->Class.LoadSynchronous();
         }
     }
 
     return nullptr;
+}
+
+FJavascriptSerializationData UJavascriptSubsystem::SerializeObject(UObject* object)
+{
+    FJavascriptSerializationData NewRecord = FJavascriptSerializationData();
+
+    if (!IsValid(object))
+    {
+        return NewRecord;
+    }
+
+    if (AActor *actor = Cast<AActor>(object))
+    {
+        NewRecord.ActorTransform = actor->GetActorTransform();
+    }
+
+    //serialize any properties which have CPF_SaveGame checked (or SaveGame UPROPERTY specifier)
+    FJavascriptSerializationWriter Writer = FJavascriptSerializationWriter(NewRecord.Data);
+    Writer.ArIsSaveGame = true;
+    object->Serialize(Writer);
+
+    return NewRecord;
+}
+
+void UJavascriptSubsystem::DeserializeObject(UObject* object, FJavascriptSerializationData saveData)
+{
+    if (!IsValid(object))
+    {
+        return;
+    }
+
+    if (saveData.IsEmpty())
+    {
+        return;
+    }
+
+    if (AActor *actor = Cast<AActor>(object))
+    {
+        actor->SetActorTransform(saveData.ActorTransform);
+    }
+
+    FJavascriptSerializationReader Reader = FJavascriptSerializationReader(saveData.Data);
+    object->Serialize(Reader);
 }
 
 UEngine* UJavascriptSubsystem::GetEngine()

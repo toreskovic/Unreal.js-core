@@ -176,7 +176,7 @@ UClass* UJavascriptComponent::ResolveClass(FName Name)
 		}
 		else
 		{
-			return row->Class;
+			return row->Class.LoadSynchronous();
 		}
 	}
 

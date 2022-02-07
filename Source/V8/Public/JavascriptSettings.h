@@ -13,7 +13,7 @@ public:
 	FStringAssetReference Asset;
 
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UObject> Class;
+	TSoftClassPtr<UObject> Class;
 };
 
 UCLASS(config = Engine, defaultconfig)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "V8PCH.h"
+#include "JavascriptSubsystem.h"
 #include "JavascriptProxyActor.generated.h"
 
 UCLASS(BlueprintType, Blueprintable)
@@ -9,7 +10,7 @@ class AJavascriptProxyActor : public AActor
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(Transient, SkipSerialization)
+	UPROPERTY(EditAnywhere, Transient)
 	UChildActorComponent* JavascriptChildActor;
 
 	UPROPERTY(EditDefaultsOnly)
@@ -28,4 +29,10 @@ public:
 
 private:
 	UClass* GetActorClass() const;
+
+	UFUNCTION()
+	void OnPreSaveWorld(uint32 SaveFlags, UWorld* World);
+
+	UPROPERTY()
+	FJavascriptSerializationData JavascriptSerializationData;
 };
