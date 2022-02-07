@@ -5,11 +5,6 @@
 AJavascriptProxyActor::AJavascriptProxyActor()
 {
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-
-	JavascriptChildActor = CreateDefaultSubobject<UChildActorComponent>(TEXT("JavascriptChildActor"));
-	JavascriptChildActor->SetupAttachment(RootComponent);
-
-	JavascriptChildActor->bIsEditorOnly = true;
 }
 
 void AJavascriptProxyActor::RefreshJavascriptActor()
@@ -17,13 +12,34 @@ void AJavascriptProxyActor::RefreshJavascriptActor()
 #if WITH_EDITORONLY_DATA
 	if (!HasAnyFlags(RF_ClassDefaultObject))
 	{
-		JavascriptChildActor->SetChildActorClass(GetActorClass(), nullptr);
-
 		if (UWorld* world = GetWorld())
 		{
+			if (!IsValid(JavascriptChildActor) || JavascriptChildActor->GetClass() != GetActorClass())
+			{
+				FActorSpawnParameters Params;
+				Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+				Params.bAllowDuringConstructionScript = true;
+				Params.OverrideLevel = GetLevel();
+				Params.Owner = this;
+
+				Params.ObjectFlags |= (RF_Transient);
+
+				FVector Location = GetActorLocation();
+				FRotator Rotation = GetActorRotation();
+				JavascriptChildActor = GetWorld()->SpawnActor(GetActorClass(), &Location, &Rotation, Params);
+
+				if (JavascriptChildActor != nullptr)
+				{
+					if (USceneComponent* ChildRoot = JavascriptChildActor->GetRootComponent())
+					{
+						ChildRoot->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+					}
+				}
+			}
+
 			if (UJavascriptSubsystem* subsystem = world->GetSubsystem<UJavascriptSubsystem>())
 			{
-				subsystem->DeserializeObject(JavascriptChildActor->GetChildActor(), JavascriptSerializationData);
+				subsystem->DeserializeObject(JavascriptChildActor, JavascriptSerializationData);
 			}
 		}
 	}
@@ -89,10 +105,7 @@ void AJavascriptProxyActor::OnPreSaveWorld(uint32 SaveFlags, UWorld* World)
 	{
 		if (UJavascriptSubsystem* subsystem = World->GetSubsystem<UJavascriptSubsystem>())
 		{
-			if (AActor* childActor = JavascriptChildActor->GetChildActor())
-			{
-				 JavascriptSerializationData = subsystem->SerializeObject(childActor);
-			}
+			JavascriptSerializationData = subsystem->SerializeObject(JavascriptChildActor);
 		}
 	}
 }

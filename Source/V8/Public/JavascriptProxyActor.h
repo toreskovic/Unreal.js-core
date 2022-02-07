@@ -10,8 +10,8 @@ class AJavascriptProxyActor : public AActor
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, Transient)
-	UChildActorComponent* JavascriptChildActor;
+	UPROPERTY(VisibleAnywhere, Category=ChildActorComponent, meta=(ShowInnerProperties))
+	AActor* JavascriptChildActor;
 
 	UPROPERTY(EditDefaultsOnly)
 	FString JavascriptClassName;
