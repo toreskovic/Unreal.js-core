@@ -45,7 +45,7 @@ void UJavascriptSubsystem::Initialize(FSubsystemCollectionBase &Collection)
         }
         else
         {
-			world->OnActorsInitialized.AddLambda([&](const UWorld::FActorsInitializedParams& P)
+			world->OnActorsInitialized.AddLambda([this](const UWorld::FActorsInitializedParams& P)
 			{
                 JavascriptContext->RunFile(TEXT("index.js"));
 			});

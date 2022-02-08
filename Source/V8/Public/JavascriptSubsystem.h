@@ -41,6 +41,11 @@ public:
 			FName N = FName(*StringName);
 
 			Obj = FindObject<UObject>(ANY_PACKAGE, *StringName, false);
+			if (Obj == nullptr)
+			{
+				FStringAssetReference stringAssetRef = StringName;
+				Obj = stringAssetRef.TryLoad();
+			}
 		}
 		else
 		{
@@ -71,6 +76,11 @@ public:
 			FName N = FName(*StringName);
 
 			Obj = FindObject<UObject>(ANY_PACKAGE, *StringName, false);
+			if (Obj == nullptr)
+			{
+				FStringAssetReference stringAssetRef = StringName;
+				Obj = stringAssetRef.TryLoad();
+			}
 		}
 		else
 		{

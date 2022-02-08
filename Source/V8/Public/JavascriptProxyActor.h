@@ -10,8 +10,7 @@ class AJavascriptProxyActor : public AActor
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(VisibleAnywhere, Category=ChildActorComponent, meta=(ShowInnerProperties))
-	AActor* JavascriptChildActor;
+	TWeakObjectPtr<AActor> JavascriptChildActor;
 
 	UPROPERTY(EditDefaultsOnly)
 	FString JavascriptClassName;
@@ -25,7 +24,17 @@ public:
 
 	virtual void PostRegisterAllComponents() override;
 
+	virtual void PostActorCreated();
+
+	virtual void OnConstruction(const FTransform& Transform) override;
+
 	virtual void BeginPlay() override;
+
+	virtual void BeginDestroy() override;
+
+	virtual void PreDuplicate(FObjectDuplicationParameters& DupParams) override;
+
+	virtual void Serialize(FArchive& Ar) override;
 
 private:
 	UClass* GetActorClass() const;
