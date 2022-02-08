@@ -71,8 +71,6 @@ void AJavascriptProxyActor::OnConstruction(const FTransform& Transform)
 			if (!world->IsGameWorld())
 			{
 				RefreshJavascriptActor();
-
-				FEditorDelegates::PreSaveWorld.AddUObject(this, &AJavascriptProxyActor::OnPreSaveWorld);
 			}
 		}
 	}
@@ -100,7 +98,6 @@ void AJavascriptProxyActor::BeginPlay()
 				}
 			}
 		}
-	}
 	}
 }
 
