@@ -51,31 +51,12 @@ void AJavascriptProxyActor::RefreshJavascriptActor()
 
 				if (UJavascriptContext* context = subsystem->GetJavascriptContext())
 				{
-					world->GetTimerManager().SetTimerForNextTick([this, context]()
-						{
-							context->JavascriptContext->CallProxyFunction(GetActorClass(), JavascriptChildActor.Get(), TEXT("postProxySpawn"), nullptr);
-						}
-					);
+					context->JavascriptContext->CallProxyFunction(GetActorClass(), JavascriptChildActor.Get(), TEXT("postProxySpawn"), nullptr);
 				}
 			}
 		}
 	}
 #endif
-}
-
-void AJavascriptProxyActor::PostInitProperties()
-{
-	Super::PostInitProperties();
-}
-
-void AJavascriptProxyActor::PostRegisterAllComponents()
-{
-	Super::PostRegisterAllComponents();
-}
-
-void AJavascriptProxyActor::PostActorCreated()
-{
-	Super::PostActorCreated();
 }
 
 void AJavascriptProxyActor::OnConstruction(const FTransform& Transform)
@@ -104,25 +85,22 @@ void AJavascriptProxyActor::BeginPlay()
 
 	if (UWorld* world = GetWorld())
 	{
-		world->GetTimerManager().SetTimerForNextTick([this, world]()
+		AActor* javascriptActor = GetWorld()->SpawnActorDeferred<AActor>(GetActorClass(), GetTransform());
+
+		if (javascriptActor != nullptr)
+		{
+			if (UJavascriptSubsystem* subsystem = world->GetSubsystem<UJavascriptSubsystem>())
 			{
-				AActor* javascriptActor = GetWorld()->SpawnActorDeferred<AActor>(GetActorClass(), GetTransform());
+				subsystem->DeserializeObject(javascriptActor, JavascriptSerializationData);
 
-				if (javascriptActor != nullptr)
+				UGameplayStatics::FinishSpawningActor(javascriptActor, JavascriptSerializationData.ActorTransform);
+				if (UJavascriptContext* context = subsystem->GetJavascriptContext())
 				{
-					if (UJavascriptSubsystem* subsystem = world->GetSubsystem<UJavascriptSubsystem>())
-					{
-						subsystem->DeserializeObject(javascriptActor, JavascriptSerializationData);
-
-						UGameplayStatics::FinishSpawningActor(javascriptActor, JavascriptSerializationData.ActorTransform);
-						if (UJavascriptContext* context = subsystem->GetJavascriptContext())
-						{
-							context->JavascriptContext->CallProxyFunction(GetActorClass(), javascriptActor, TEXT("postProxySpawn"), nullptr);
-						}
-					}
+					context->JavascriptContext->CallProxyFunction(GetActorClass(), javascriptActor, TEXT("postProxySpawn"), nullptr);
 				}
 			}
-		);
+		}
+	}
 	}
 }
 
@@ -134,22 +112,6 @@ void AJavascriptProxyActor::BeginDestroy()
 	}
 
 	Super::BeginDestroy();
-}
-
-void AJavascriptProxyActor::PreDuplicate(FObjectDuplicationParameters& DupParams)
-{
-	Super::PreDuplicate(DupParams);
-
-	/*if (DupParams.DuplicateMode == EDuplicateMode::PIE)
-	{
-		if (UWorld* world = GetWorld())
-		{
-			if (UJavascriptSubsystem* subsystem = world->GetSubsystem<UJavascriptSubsystem>())
-			{
-				JavascriptSerializationData = subsystem->SerializeObject(JavascriptChildActor.Get());
-			}
-		}
-	}*/
 }
 
 void AJavascriptProxyActor::Serialize(FArchive& Ar)
@@ -181,13 +143,3 @@ UClass* AJavascriptProxyActor::GetActorClass() const
 	return nullptr;
 }
 
-void AJavascriptProxyActor::OnPreSaveWorld(uint32 SaveFlags, UWorld* World)
-{
-	if (World)
-	{
-		if (UJavascriptSubsystem* subsystem = World->GetSubsystem<UJavascriptSubsystem>())
-		{
-			JavascriptSerializationData = subsystem->SerializeObject(JavascriptChildActor.Get());
-		}
-	}
-}
