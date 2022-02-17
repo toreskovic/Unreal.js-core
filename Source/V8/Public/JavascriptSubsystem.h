@@ -54,6 +54,19 @@ public:
 		}
 		return *this;
 	}
+
+	virtual bool ShouldSkipProperty(const FProperty* InProperty) const override
+	{
+		EObjectFlags flags = InProperty->GetFlags();
+		EPropertyFlags propFlags = InProperty->GetPropertyFlags();
+
+		if (InProperty->HasAnyPropertyFlags(EPropertyFlags::CPF_InstancedReference))
+		{
+			return true;
+		}
+
+		return false;
+	}
 };
 
 class FJavascriptSerializationReader : public FMemoryReader
@@ -88,6 +101,19 @@ public:
 			*this << StringName;
 		}
 		return *this;
+	}
+
+	virtual bool ShouldSkipProperty(const FProperty* InProperty) const override
+	{
+		EObjectFlags flags = InProperty->GetFlags();
+		EPropertyFlags propFlags = InProperty->GetPropertyFlags();
+
+		if (InProperty->HasAnyPropertyFlags(EPropertyFlags::CPF_InstancedReference))
+		{
+			return true;
+		}
+
+		return false;
 	}
 };
 

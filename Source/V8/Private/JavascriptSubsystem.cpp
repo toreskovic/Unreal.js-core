@@ -153,7 +153,7 @@ FJavascriptSerializationData UJavascriptSubsystem::SerializeObject(UObject* obje
 
     //serialize any properties which have CPF_SaveGame checked (or SaveGame UPROPERTY specifier)
     FJavascriptSerializationWriter Writer = FJavascriptSerializationWriter(NewRecord.Data);
-    Writer.ArIsSaveGame = true;
+    Writer.ArIsSaveGame = false;
     object->Serialize(Writer);
 
     return NewRecord;
